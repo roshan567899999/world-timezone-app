@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d27ff508-e45f-4a2c-9829-b8c14dfe94d5" basePath="/timezone" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="b6c14f89-58d1-42c3-8456-2fe77722fea5" basePath="/api/timezone" >
+		<http:request-connection host="worldtimeapi.org" />
+	</http:request-config>
+	<flow name="world-demo-apiFlow" doc:id="1e6fc865-117b-4b2e-989b-89ea1577d4ed" >
+		<http:listener doc:name="Listener" doc:id="96e28328-b556-41b2-ab94-821c898e7a33" config-ref="HTTP_Listener_config" path="/{region}/{city}"/>
+		<http:request method="POST" doc:name="Request" doc:id="3bbddc5c-67e1-498e-a5b8-012be7d1af6b" config-ref="HTTP_Request_configuration" path="/{region}/{city}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	city : attributes.uriparams.city,
+	region : attributes.uriparams.region
+}]]]></http:uri-params>
+		</http:request>
+	</flow>
+</mule>
